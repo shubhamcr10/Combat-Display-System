@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed on your system:
 ## Directory Structure
 
 The project has the following directory structure:
-
+```
 Combat_Display_System
 ├── CMakeLists.txt
 ├── build
@@ -21,7 +21,7 @@ Combat_Display_System
 ├── qml
 ├── src
 └── xmlParser
-
+```
 
 ## Building the Project
 
