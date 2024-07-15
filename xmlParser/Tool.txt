@@ -1,0 +1,8 @@
+ID Tool        Price Amount
+---------------------------
+1  Hammer      5.99  200
+2  Screwdriver 2.5   600
+3  File        3.75  100
+4  Brush       1.99  1000
+5  Pliers      2     300
+6  Saw         2.5   150

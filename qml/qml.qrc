@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Combobox.qml</file>
+        <file>CustTextField.qml</file>
+        <file>DisplayTextField.qml</file>
+        <file>DisplayLowerPart.qml</file>
+        <file>myCombobox.qml</file>
+        <file>CourseSpeedDepth.qml</file>
+        <file>TrackTable.qml</file>
+        <file>SSMTargetData.qml</file>
+        <file>WayPoints.qml</file>
+        <file>WeaponDangerZone.qml</file>
+        <file>LiquidationParameters.qml</file>
+        <file>ProbabilityOfKill.qml</file>
+        <file>TrajectoryComputation.qml</file>
+        <file>Combat.qml</file>
+        <file>SelectStandByMissile.qml</file>
+        <file>GeometryDisplay.qml</file>
+        <file>map.jpg</file>
+        <file>OwnShipD.qml</file>
+        <file>RangeRular.qml</file>
+        <file>SensorCheckBox.qml</file>
+        <file>HookedTrackInfo.qml</file>
+        <file>Header.qml</file>
+        <file>Footer.qml</file>
+        <file>R001.svg</file>
+        <file>S001.svg</file>
+        <file>S002.svg</file>
+        <file>Focus.svg</file>
+        <file>blueleftarrow.svg</file>
+        <file>bluerightarrow.svg</file>
+        <file>leftarrow.svg</file>
+        <file>rightarrow.svg</file>
+    </qresource>
+</RCC>

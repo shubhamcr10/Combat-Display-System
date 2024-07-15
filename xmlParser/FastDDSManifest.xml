@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<DDS FormatVersion="1">
+    <participant>
+        <rtps>
+            <name>default_xrce_participant</name>
+        </rtps>
+    </participant>
+    <Topics>
+        <Topic>
+            <topicId>1</topicId>
+            <name>TRACKS_TOPIC</name>
+            <dataType>TrackType</dataType>
+            <kind>NO_KEY</kind>
+            <!--<serialize>
+            <fieldname>course</fieldnamename>
+            <fieldnamename>speed</fieldnamename>
+            <fieldnamename>depth</fieldnamename>
+            <classname>CourseSpeedDepth</classname>
+            </serialize> -->
+        </Topic>
+        <Topic>
+            <topicId>2</topicId>
+        	<name>CourseSpeedDepthPubSubTopic</name>    
+            <dataType>CourseSpeedDepth</dataType>
+        	<kind>NO_KEY</kind>
+        </Topic>
+        <Topic>
+            <topicId>3</topicId>
+        	<name>CourseSpeedDepthPubSubTopic</name>
+            <dataType>CourseSpeedDepth</dataType>
+        	<kind>NO_KEY</kind>
+        </Topic>
+    </Topics>
+</DDS>
