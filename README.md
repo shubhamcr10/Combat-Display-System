@@ -115,6 +115,11 @@ To clean up the build files, you can run the following command from the Combat_D
 rm -rf build/*
 ```
 
+## Demo
+![Combat Display System Demo](https://s6.gifyu.com/images/Combat_Display_System_Demo.gif)
+
+This GIF demonstrates the Combat Display System in action, visualizing tracks captured by radar and sonar sensors.
+
 ## Contributing
 If you wish to contribute to this project, please follow these steps:
 
