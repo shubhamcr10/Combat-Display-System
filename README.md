@@ -101,6 +101,14 @@ QML Files:
 XML Parser:
 - The xmlParser directory contains the necessary files for parsing XML data used by the application.
 
+Simulators
+For generating simulated data, you can use the following simulators:
+- [Track Simulator](https://github.com/shubhamcr10/Track-Simulator)
+- [Course Simulator](https://github.com/shubhamcr10/Course-Simulator)
+
+Track Simulator
+Course Simulator
+
 ## Cleaning Up
 To clean up the build files, you can run the following command from the Combat_Display_System directory:
 ```bash
