@@ -78,10 +78,10 @@ Contributing
 If you wish to contribute to this project, please follow these steps:
 
 Fork the repository.
-Create a new branch (git checkout -b feature-branch).
-Commit your changes (git commit -am 'Add new feature').
-Push to the branch (git push origin feature-branch).
-Create a new Pull Request.
+- Create a new branch (git checkout -b feature-branch).
+- Commit your changes (git commit -am 'Add new feature').
+- Push to the branch (git push origin feature-branch).
+- Create a new Pull Request.
 
 Contact
 For any questions or issues, please contact at shubhamcr10@gmail.com .
