@@ -116,7 +116,7 @@ rm -rf build/*
 ```
 
 ## Demo
-![Combat Display System](https://github.com/user-attachments/assets/779abd97-8437-4dcc-9de9-a88e8bc639a9)
+![Combat Display System](https://github.com/user-attachments/assets/de0b1ca4-9694-45b5-bf45-d68e68e4666f)
 
 This GIF demonstrates the Combat Display System in action, visualizing tracks captured by radar and sonar sensors.
 
