@@ -1,4 +1,4 @@
-name: Build and Test
+name: CI Pipeline
 
 on:
   push:
@@ -9,17 +9,54 @@ on:
       - main
 
 jobs:
-  build:
+  setup-environment:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Set up C++ build environment
-      run: sudo apt-get update && sudo apt-get install -y build-essential cmake qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev git
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake gcc g++ build-essential
+        sudo apt-get install -y curl
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libasio-dev
+        sudo apt-get install -y libtinyxml2-dev
 
-    - name: Install microcdr and microxrcedds_client from source
+    - name: Install Qt5
+      run: |
+        sudo apt-get install -y qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
+
+    - name: Cache Micro XRCE-DDS Agent
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/bin/MicroXRCEAgent
+        key: ${{ runner.os }}-xrce-agent-${{ hashFiles('Micro-XRCE-DDS-Agent/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-xrce-agent-
+
+    - name: Cache Micro XRCE-DDS Client
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/lib/libmicroxrcedds_client.a
+          /usr/local/include/uxr/client
+          /usr/local/share/microxrcedds_client/cmake/
+        key: ${{ runner.os }}-xrce-client-${{ hashFiles('Micro-XRCE-DDS-Client/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-xrce-client-
+
+    - name: Cache Qt5
+      uses: actions/cache@v3
+      with:
+        path: /usr/lib/x86_64-linux-gnu
+        key: ${{ runner.os }}-qt5-${{ hashFiles('/usr/lib/x86_64-linux-gnu/*') }}
+        restore-keys: |
+          ${{ runner.os }}-qt5-
+
+    - name: Install microcdr 
       run: |
         # Install microcdr
         git clone https://github.com/eProsima/Micro-CDR
@@ -28,22 +65,77 @@ jobs:
         cmake ..
         make
         sudo make install
-        cd ../..
 
-        # Install microxrcedds_client
+    - name: Install Micro XRCE-DDS Client
+      if: steps.cache-micro-xrce-dds-client.outputs.cache-hit != 'true'
+      run: |
         git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
         cd Micro-XRCE-DDS-Client
         mkdir build && cd build
         cmake ..
         make
         sudo make install
-        cd ../..
+        sudo ldconfig /usr/local/lib/
 
-    - name: Configure the project
-      run: cmake -S . -B build
+    - name: Cache CMake files
+      uses: actions/cache@v3
+      with:
+        path: build
+        key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-cmake-
+
+    - name: Check installed packages
+      run: |
+        ls -l /usr/local/lib | grep microcdr
+        ls -l /usr/local/bin | grep MicroXRCEAgent
+
+  build:
+    needs: setup-environment
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
     - name: Build the project
-      run: cmake --build build --config Release
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
+        make
 
-    - name: Run tests
-      run: ./build/CombatDisplay
+  analyze:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: CodeQL Analysis
+      uses: github/codeql-action/init@v1
+      with:
+        languages: cpp
+
+    - name: Perform CodeQL Analysis
+      run: |
+        codeql database create --language=cpp --output=codeql-db
+        codeql database analyze codeql-db --format=sarif-latest --output=codeql-analysis.sarif
+
+  format:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Clang-Format
+      run: sudo apt-get install -y clang-format
+
+    - name: Format code
+      run: clang-format -i **/*.cpp **/*.h
+
+    - name: Check for formatting issues
+      run: git diff --exit-code
