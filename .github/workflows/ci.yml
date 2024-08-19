@@ -27,7 +27,7 @@ jobs:
 
     - name: Install Qt5
       run: |
-        sudo apt-get install -y qt5-default qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
+        sudo apt-get install -y qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
 
     - name: Cache Micro XRCE-DDS Agent
       uses: actions/cache@v3
