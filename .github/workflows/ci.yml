@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Build and Test
 
 on:
   push:
@@ -19,9 +19,8 @@ jobs:
     - name: Set up C++ build environment
       run: sudo apt-get update && sudo apt-get install -y build-essential cmake qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev git
 
-    - name: Install microcdr and microxrcedds_client from source
+    - name: Install microcdr
       run: |
-        # Install microcdr
         git clone https://github.com/eProsima/Micro-CDR
         cd Micro-CDR
         mkdir build && cd build
@@ -30,7 +29,8 @@ jobs:
         sudo make install
         cd ../..
 
-        # Install microxrcedds_client
+    - name: Install microxrcedds_client
+      run: |
         git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
         cd Micro-XRCE-DDS-Client
         mkdir build && cd build
