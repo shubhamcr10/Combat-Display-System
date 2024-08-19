@@ -56,15 +56,17 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: CodeQL Analysis
-      uses: github/codeql-action/init@v2
-      with:
-        languages: cpp
+    - name: Install cppcheck
+      run: sudo apt-get install -y cppcheck
 
-    - name: Perform CodeQL Analysis
-      run: |
-        codeql database create --language=cpp --output=codeql-db
-        codeql database analyze codeql-db --format=sarif-latest --output=codeql-analysis.sarif
+    - name: Run cppcheck
+      run: cppcheck --enable=all --std=c++11 --force --project=build/CppcheckList.xml src include
+
+    - name: Install clang-tidy
+      run: sudo apt-get install -y clang-tidy
+
+    - name: Run clang-tidy
+      run: clang-tidy -p=build src/*.cpp include/*.h
 
   format:
     needs: build
