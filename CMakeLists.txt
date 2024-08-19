@@ -15,22 +15,28 @@ set(UCLIENT_PROFILE_SERIAL TRUE)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Update paths based on where dependencies are installed
+# Set paths for dependencies
 set(MICRO_XRCE_DDS_AGENT_DIR "/usr/local/bin/MicroXRCEAgent")
 set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib")
-set(MICRO_CDR_DIR "/usr/local/lib/cmake/microcdr")
-set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib/cmake/microxrcedds_client")
-
 set(CMAKE_PREFIX_PATH "/usr/local" ${CMAKE_PREFIX_PATH})
+
+# Manually set the paths for microcdr and microxrcedds_client
+set(microcdr_DIR "/usr/local/share/microcdr/cmake")
+set(microxrcedds_agent_DIR "/usr/local/share/microxrcedds_agent/cmake")
+set(microxrcedds_client_DIR "/usr/local/share/microxrcedds_client/cmake")
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/xmlParser)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(/usr/local/include)  # Include the directory where microcdr and microxrcedds_client headers are located
 
+# Configure Micro XRCE-DDS dependencies
+include_directories(/usr/local/include/uxr/client)
+link_directories(/usr/local/lib)
+
 # Find required packages
-find_package(microcdr REQUIRED PATHS ${MICRO_CDR_DIR})
-find_package(microxrcedds_client REQUIRED PATHS ${MICRO_XRCE_DDS_CLIENT_DIR})
+find_package(microcdr REQUIRED)
+find_package(microxrcedds_client REQUIRED)
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
 # Source and header files
@@ -116,9 +122,6 @@ target_compile_definitions(CombatDisplay
 # Copy manifest file
 file(COPY ${CMAKE_SOURCE_DIR}/xmlParser/FastDDSManifest.xml DESTINATION ${CMAKE_BINARY_DIR})
 
-# Configure Micro XRCE-DDS dependencies
-include_directories(${MICRO_XRCE_DDS_CLIENT_DIR}/uxr/client)
-link_directories(${MICRO_XRCE_DDS_CLIENT_DIR})
 
 # Add target for Micro XRCE-DDS Agent
 add_custom_target(MicroXRCEAgent
