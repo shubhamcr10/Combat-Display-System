@@ -32,7 +32,7 @@ jobs:
     - name: Cache Micro XRCE-DDS Agent
       uses: actions/cache@v3
       with:
-        path: /usr/local
+        path: /usr/local/bin/MicroXRCEAgent
         key: ${{ runner.os }}-xrce-agent-${{ hashFiles('path/to/agent/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-xrce-agent-
@@ -40,7 +40,7 @@ jobs:
     - name: Cache Micro XRCE-DDS Client
       uses: actions/cache@v3
       with:
-        path: /usr/local
+        path: /usr/local/lib/libmicrourcdds*
         key: ${{ runner.os }}-xrce-client-${{ hashFiles('path/to/client/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-xrce-client-

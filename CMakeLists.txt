@@ -15,6 +15,11 @@ set(UCLIENT_PROFILE_SERIAL TRUE)
 # Add the path where dependencies are installed
 set(CMAKE_PREFIX_PATH "/usr/local" ${CMAKE_PREFIX_PATH})
 
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR}/xmlParser)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(/usr/local/include)  # Include the directory where microcdr and microxrcedds_client headers are located
+
 # Find required packages
 find_package(microcdr REQUIRED)
 find_package(microxrcedds_client REQUIRED)
@@ -22,10 +27,6 @@ find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Include directories
-include_directories(${CMAKE_SOURCE_DIR}/xmlParser)
-include_directories(${CMAKE_SOURCE_DIR}/include)
 
 # Source and header files
 set(DDS_SRCS
@@ -98,6 +99,7 @@ endif()
 target_link_libraries(CombatDisplay
   PRIVATE Qt5::Core Qt5::Quick
   microxrcedds_client
+  microcdr
   ${CMAKE_SOURCE_DIR}/xmlParser/libs/libpugixml.a
 )
 
