@@ -88,13 +88,13 @@ jobs:
         sudo make install
         sudo ldconfig /usr/local/lib/
 
-    - name: Cache CMake files
-      uses: actions/cache@v3
-      with:
-        path: build
-        key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-cmake-
+    # - name: Cache CMake files
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: build
+    #     key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-cmake-
 
     # - name: Check installed packages
     #   run: |
@@ -105,16 +105,22 @@ jobs:
     needs: setup-environment
     runs-on: ubuntu-latest
 
+    # steps:
+    # - name: Checkout code
+    #   uses: actions/checkout@v2
+
+    # - name: Build the project
+    #   run: |
+    #     mkdir -p build
+    #     cd build
+    #     cmake ..
+    #     make
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - name: Configure the project
+      run: cmake -S . -B build
 
     - name: Build the project
-      run: |
-        mkdir -p build
-        cd build
-        cmake ..
-        make
+      run: cmake --build build --config Release
 
   analyze:
     needs: build
