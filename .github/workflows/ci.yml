@@ -1,4 +1,4 @@
-name: Build and Test
+name: CI/CD Pipeline
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
         sudo make install
 
     - name: Configure the project
-      run: cmake -S . -B build
+      run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
     - name: Build the project
       run: cmake --build build --config Release
@@ -62,7 +62,7 @@ jobs:
       run: sudo apt-get install -y cppcheck
 
     - name: Run cppcheck
-      run: cppcheck --enable=all --std=c++11 --force --include=src --include=include src include
+      run: cppcheck --enable=all --std=c++11 --force src include
 
     - name: Install clang-tidy
       run: sudo apt-get install -y clang-tidy
