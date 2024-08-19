@@ -1,0 +1,98 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  setup-environment:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake gcc g++ build-essential
+        sudo apt-get install -y curl
+        sudo apt-get install -y libssl-dev
+        sudo apt-get install -y libasio-dev
+        sudo apt-get install -y libtinyxml2-dev
+
+    - name: Install Micro XRCE-DDS Agent
+      run: |
+        git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
+        cd Micro-XRCE-DDS-Agent
+        mkdir build && cd build
+        cmake ..
+        make
+        sudo make install
+
+    - name: Install Micro XRCE-DDS Client
+      run: |
+        git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
+        cd Micro-XRCE-DDS-Client
+        mkdir build && cd build
+        cmake ..
+        make
+        sudo make install
+        sudo ldconfig /usr/local/lib/
+
+  build:
+    needs: setup-environment
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up C++
+      uses: actions/setup-cpp@v1
+
+    - name: Build the project
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+
+  analyze:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: CodeQL Analysis
+      uses: github/codeql-action/init@v1
+      with:
+        languages: cpp
+
+    - name: Perform CodeQL Analysis
+      run: |
+        codeql database create --language=cpp --output=codeql-db
+        codeql database analyze codeql-db --format=sarif-latest --output=codeql-analysis.sarif
+
+  format:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Clang-Format
+      run: sudo apt-get install clang-format
+
+    - name: Format code
+      run: clang-format -i **/*.cpp **/*.h
+
+    - name: Check for formatting issues
+      run: git diff --exit-code
