@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
@@ -25,40 +25,52 @@ jobs:
         sudo apt-get install -y libasio-dev
         sudo apt-get install -y libtinyxml2-dev
 
+    ## NO USE / DONT NEED CACHING (FOR NOW)
+    # - name: Cache Micro XRCE-DDS Agent
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: /usr/local/bin/MicroXRCEAgent
+    #     key: ${{ runner.os }}-xrce-agent-${{ hashFiles('Micro-XRCE-DDS-Agent/CMakeLists.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-xrce-agent-
+
+    # - name: Cache Micro XRCE-DDS Client
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       /usr/local/lib/libmicroxrcedds_client.a
+    #       /usr/local/include/uxr/client
+    #       /usr/local/share/microxrcedds_client/cmake/
+    #     key: ${{ runner.os }}-xrce-client-${{ hashFiles('Micro-XRCE-DDS-Client/CMakeLists.txt') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-xrce-client-
+
+    # - name: Cache Qt5
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: /usr/lib/x86_64-linux-gnu
+    #     key: ${{ runner.os }}-qt5-${{ hashFiles('/usr/lib/x86_64-linux-gnu/*') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-qt5-
+
+    ## NO NEED TO BUILD AGENT (TAKES FUCKING AEGIS TO BUILD)
+    # - name: Install Micro XRCE-DDS Agent
+    #   if: steps.cache-micro-xrce-dds-agent.outputs.cache-hit != 'true'
+    #   run: |
+    #     git clone https://github.com/eProsima/Micro-XRCE-DDS-Agent.git
+    #     cd Micro-XRCE-DDS-Agent
+    #     mkdir build && cd build
+    #     cmake ..
+    #     make
+    #     sudo make install
+
     - name: Install Qt5
       run: |
         sudo apt-get install -y qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
 
-    - name: Cache Micro XRCE-DDS Agent
-      uses: actions/cache@v3
-      with:
-        path: /usr/local/bin/MicroXRCEAgent
-        key: ${{ runner.os }}-xrce-agent-${{ hashFiles('Micro-XRCE-DDS-Agent/CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-xrce-agent-
 
-    - name: Cache Micro XRCE-DDS Client
-      uses: actions/cache@v3
-      with:
-        path: |
-          /usr/local/lib/libmicroxrcedds_client.a
-          /usr/local/include/uxr/client
-          /usr/local/share/microxrcedds_client/cmake/
-        key: ${{ runner.os }}-xrce-client-${{ hashFiles('Micro-XRCE-DDS-Client/CMakeLists.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-xrce-client-
-
-    - name: Cache Qt5
-      uses: actions/cache@v3
-      with:
-        path: /usr/lib/x86_64-linux-gnu
-        key: ${{ runner.os }}-qt5-${{ hashFiles('/usr/lib/x86_64-linux-gnu/*') }}
-        restore-keys: |
-          ${{ runner.os }}-qt5-
-
-    - name: Install microcdr 
+    - name: Install Micro-CDR
       run: |
-        # Install microcdr
         git clone https://github.com/eProsima/Micro-CDR
         cd Micro-CDR
         mkdir build && cd build
@@ -67,7 +79,6 @@ jobs:
         sudo make install
 
     - name: Install Micro XRCE-DDS Client
-      if: steps.cache-micro-xrce-dds-client.outputs.cache-hit != 'true'
       run: |
         git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
         cd Micro-XRCE-DDS-Client
@@ -85,10 +96,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-cmake-
 
-    - name: Check installed packages
-      run: |
-        ls -l /usr/local/lib | grep microcdr
-        ls -l /usr/local/bin | grep MicroXRCEAgent
+    # - name: Check installed packages
+    #   run: |
+    #     ls -l /usr/local/lib | grep microcdr
+    #     ls -l /usr/local/bin | grep MicroXRCEAgent
 
   build:
     needs: setup-environment
