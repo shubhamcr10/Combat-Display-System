@@ -17,15 +17,28 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Set up C++ build environment
-      run: sudo apt-get update && sudo apt-get install -y build-essential cmake qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
+      run: sudo apt-get update && sudo apt-get install -y build-essential cmake qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev git
 
-    - name: Install microcdr and microxrcedds_client dependencies
+    - name: Install microcdr and microxrcedds_client from source
       run: |
-        sudo apt-get update
-        sudo apt-get install -y libmicrocdr-dev libmicroxrcedds-client-dev
+        # Install microcdr
+        git clone https://github.com/eProsima/microcdr.git
+        cd microcdr
+        mkdir build && cd build
+        cmake ..
+        sudo make install
+        cd ../..
+
+        # Install microxrcedds_client
+        git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
+        cd Micro-XRCE-DDS-Client
+        mkdir build && cd build
+        cmake ..
+        sudo make install
+        cd ../..
 
     - name: Configure the project
-      run: cmake -S . -B build -DCMAKE_PREFIX_PATH="/usr/local/share/microcdr/cmake:/usr/local/share/microxrcedds_client/cmake"
+      run: cmake -S . -B build
 
     - name: Build the project
       run: cmake --build build --config Release
