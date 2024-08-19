@@ -12,7 +12,15 @@ set(UCLIENT_PROFILE_UDP TRUE)
 set(UCLIENT_PROFILE_TCP TRUE)
 set(UCLIENT_PROFILE_SERIAL TRUE)
 
-# Add the path where dependencies are installed
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Update paths based on where dependencies are installed
+set(MICRO_XRCE_DDS_AGENT_DIR "/usr/local/bin/MicroXRCEAgent")
+set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib")
+set(MICRO_CDR_DIR "/usr/local/lib/cmake/microcdr")
+set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib/cmake/microxrcedds_client")
+
 set(CMAKE_PREFIX_PATH "/usr/local" ${CMAKE_PREFIX_PATH})
 
 # Include directories
@@ -21,12 +29,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(/usr/local/include)  # Include the directory where microcdr and microxrcedds_client headers are located
 
 # Find required packages
-find_package(microcdr REQUIRED)
-find_package(microxrcedds_client REQUIRED)
+find_package(microcdr REQUIRED PATHS ${MICRO_CDR_DIR})
+find_package(microxrcedds_client REQUIRED PATHS ${MICRO_XRCE_DDS_CLIENT_DIR})
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
-
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Source and header files
 set(DDS_SRCS
@@ -112,9 +117,6 @@ target_compile_definitions(CombatDisplay
 file(COPY ${CMAKE_SOURCE_DIR}/xmlParser/FastDDSManifest.xml DESTINATION ${CMAKE_BINARY_DIR})
 
 # Configure Micro XRCE-DDS dependencies
-# Path where dependencies are installed
-set(MICRO_XRCE_DDS_AGENT_DIR "/usr/local/bin/MicroXRCEAgent")
-set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib")
 include_directories(${MICRO_XRCE_DDS_CLIENT_DIR}/uxr/client)
 link_directories(${MICRO_XRCE_DDS_CLIENT_DIR})
 
