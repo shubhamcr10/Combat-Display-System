@@ -37,8 +37,8 @@ include_directories(/usr/local/include/uxr/client)
 link_directories(/usr/local/lib)
 
 # Find required packages
-find_package(microcdr REQUIRED)
-find_package(microxrcedds_client REQUIRED)
+find_package(microcdr REQUIRED PATHS "/usr/local/share/microcdr/cmake")
+find_package(microxrcedds_client REQUIRED PATHS "/usr/local/share/microxrcedds_client/cmake")
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
 # Source and header files
@@ -123,7 +123,6 @@ target_compile_definitions(CombatDisplay
 
 # Copy manifest file
 file(COPY ${CMAKE_SOURCE_DIR}/xmlParser/FastDDSManifest.xml DESTINATION ${CMAKE_BINARY_DIR})
-
 
 # Add target for Micro XRCE-DDS Agent
 add_custom_target(MicroXRCEAgent

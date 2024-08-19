@@ -32,7 +32,7 @@ jobs:
     - name: Cache Micro XRCE-DDS Agent
       uses: actions/cache@v3
       with:
-        path: /usr/local/bin/MicroXRCEAgent
+        path: ./cache/MicroXRCEAgent
         key: ${{ runner.os }}-xrce-agent-${{ hashFiles('Micro-XRCE-DDS-Agent/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-xrce-agent-
@@ -40,10 +40,7 @@ jobs:
     - name: Cache Micro XRCE-DDS Client
       uses: actions/cache@v3
       with:
-        path: |
-          /usr/local/lib/libmicroxrcedds_client.a
-          /usr/local/include/uxr/client
-          /usr/local/share/microxrcedds_client/cmake/
+        path: ./cache/MicroXRCEClient
         key: ${{ runner.os }}-xrce-client-${{ hashFiles('Micro-XRCE-DDS-Client/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-xrce-client-
@@ -51,7 +48,7 @@ jobs:
     - name: Cache Qt5
       uses: actions/cache@v3
       with:
-        path: /usr/lib/x86_64-linux-gnu
+        path: ./cache/Qt5
         key: ${{ runner.os }}-qt5-${{ hashFiles('/usr/lib/x86_64-linux-gnu/*') }}
         restore-keys: |
           ${{ runner.os }}-qt5-
@@ -65,6 +62,7 @@ jobs:
         cmake ..
         make
         sudo make install
+        sudo cp -r /usr/local/bin/MicroXRCEAgent ./cache/MicroXRCEAgent
 
     - name: Install Micro XRCE-DDS Client
       if: steps.cache-micro-xrce-dds-client.outputs.cache-hit != 'true'
@@ -75,7 +73,9 @@ jobs:
         cmake ..
         make
         sudo make install
-        sudo ldconfig /usr/local/lib/
+        sudo cp -r /usr/local/lib/libmicroxrcedds_client.a ./cache/MicroXRCEClient/
+        sudo cp -r /usr/local/include/uxr ./cache/MicroXRCEClient/include/
+        sudo cp -r /usr/local/share/microxrcedds_client ./cache/MicroXRCEClient/share/
 
     - name: Cache CMake files
       uses: actions/cache@v3
@@ -87,8 +87,8 @@ jobs:
 
     - name: Check installed packages
       run: |
-        ls -l /usr/local/lib | grep microcdr
-        ls -l /usr/local/bin | grep MicroXRCEAgent
+        ls -l ./cache/MicroXRCEClient
+        ls -l ./cache/MicroXRCEAgent
 
   build:
     needs: setup-environment
