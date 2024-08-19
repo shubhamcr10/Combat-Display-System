@@ -11,9 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    outputs:
-      build-dir: ${{ steps.build.outputs.build-dir }}
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -48,9 +45,6 @@ jobs:
 
     - name: Build the project
       run: cmake --build build --config Release
-      id: build
-      outputs:
-        build-dir: build
 
     - name: List build directory
       run: ls -l build || echo "Build directory not found"
