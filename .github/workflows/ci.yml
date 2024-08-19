@@ -21,7 +21,7 @@ jobs:
 
     - name: Install Micro XRCE-DDS dependencies
       run: |
-        sssudo snap install micro-xrce-dds-agent
+        sudo snap install micro-xrce-dds-agent
 
     - name: Configure the project
       run: cmake -S . -B build
