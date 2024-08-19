@@ -43,11 +43,6 @@ jobs:
         sudo ldconfig /usr/local/lib/
         cd ../..
 
-    - name: Check installed packages
-      run: |
-        ls -l /usr/local/lib | grep microcdr
-        ls -l /usr/local/bin | grep microxrcedds_client
-
   build:
     needs: setup-environment
     runs-on: ubuntu-latest
