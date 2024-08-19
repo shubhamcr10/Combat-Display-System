@@ -1,6 +1,6 @@
 # Combat Display System
 
-![CI Pipeline](https://github.com/shubhamcr10/Combat-Display-System/actions/workflows/ci.yml/badge.svg
+![CI Pipeline](https://github.com/shubhamcr10/Combat-Display-System/actions/workflows/ci.yml/badge.svg)
 
 The Combat Display System is a project designed as a clone of a navy-like display system. It provides a graphical interface for visualizing the movements of tracks captured by radar and sonar sensors, with data sent by simulators.
 
