@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build_Analyze_Format_Checks:
+  Build_Analyze_Format_Checks:
     runs-on: ubuntu-latest
 
     steps:
