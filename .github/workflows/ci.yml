@@ -1,4 +1,4 @@
-name: CI Workflow
+name: CI/CD Pipeline
 
 on:
   push:
@@ -11,65 +11,108 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up CMake
-        uses: cmake/setup-cmake@v3
-        with:
-          cmake-version: '3.24' # Adjust to your required version
+    - name: Set up C++ build environment
+      run: sudo apt-get update && sudo apt-get install -y build-essential cmake git
 
-      - name: Install dependencies
-        run: sudo apt-get install -y build-essential libqt5widgets5 qt5-qmake
+    - name: Install Qt5
+      run: |
+        sudo apt-get install -y qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
 
-      - name: Configure CMake
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+    - name: Install microcdr
+      run: |
+        git clone https://github.com/eProsima/Micro-CDR
+        cd Micro-CDR
+        mkdir build && cd build
+        cmake ..
+        make
+        sudo make install
 
-      - name: Build
-        run: cmake --build build --config Release
+    - name: Install microxrcedds_client
+      run: |
+        git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
+        cd Micro-XRCE-DDS-Client
+        mkdir build && cd build
+        cmake ..
+        make
+        sudo make install
 
-      - name: List build directory contents
-        run: ls -la build
+    - name: Configure the project
+      run: cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: build
+    - name: Build the project
+      run: cmake --build build --config Release
 
-  analyze:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: List build directory
+      run: ls -l build || echo "Build directory not found"
 
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
+    - name: Run tests
+      run: ./build/CombatDisplay
 
-      - name: Print working directory
-        run: pwd
+    - name: Install cppcheck
+      run: sudo apt-get install -y cppcheck
 
-      - name: List root directory contents
-        run: ls -la
+    - name: Run cppcheck
+      run: cppcheck --enable=all --std=c++11 --force src include
 
-      - name: List downloaded artifact directory contents
-        run: ls -la Combat-Display-System
+    - name: Install clang-tidy
+      run: sudo apt-get install -y clang-tidy
 
-      - name: List build directory contents
-        run: ls -la Combat-Display-System/build
+    - name: List build directory
+      run: ls -l build || echo "Build directory not found"
 
-      - name: Install cppcheck
-        run: sudo apt-get install -y cppcheck
+    - name: Run clang-tidy
+      run: clang-tidy -p=build src/*.cpp include/*.h
 
-      - name: Run cppcheck
-        run: cppcheck --enable=all --std=c++11 --force src include
+    - name: Set up Clang-Format
+      run: sudo apt-get install -y clang-format
 
-      - name: Install clang-tidy
-        run: sudo apt-get install -y clang-tidy
+    - name: Format code
+      run: clang-format -i **/*.cpp **/*.h
 
-      - name: Run clang-tidy
-        run: clang-tidy -p=Combat-Display-System/build src/*.cpp include/*.h
+    - name: Check for formatting issues
+      run: git diff --exit-code
+
+  # analyze:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+
+  #   - name: Install cppcheck
+  #     run: sudo apt-get install -y cppcheck
+
+  #   - name: Run cppcheck
+  #     run: cppcheck --enable=all --std=c++11 --force src include
+
+  #   - name: Install clang-tidy
+  #     run: sudo apt-get install -y clang-tidy
+
+  #   - name: List build directory
+  #     run: ls -l build || echo "Build directory not found"
+
+  #   - name: Run clang-tidy
+  #     run: clang-tidy -p=build src/*.cpp include/*.h
+
+  # format:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
+
+  #   - name: Set up Clang-Format
+  #     run: sudo apt-get install -y clang-format
+
+  #   - name: Format code
+  #     run: clang-format -i **/*.cpp **/*.h
+
+  #   - name: Check for formatting issues
+  #     run: git diff --exit-code
