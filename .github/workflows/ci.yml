@@ -40,7 +40,9 @@ jobs:
     - name: Cache Micro XRCE-DDS Client
       uses: actions/cache@v3
       with:
-        path: /usr/local/lib/libmicrourcdds*
+        path: /usr/local/lib/libmicroxrcedds_client.a
+              /usr/local/include/uxr/client
+              /usr/local/share/microxrcedds_client/cmake/
         key: ${{ runner.os }}-xrce-client-${{ hashFiles('path/to/client/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-xrce-client-
@@ -92,7 +94,7 @@ jobs:
     #     echo "Micro XRCE-DDS Agent Path:"
     #     ls -l /usr/local/bin/MicroXRCEAgent
     #     echo "Micro XRCE-DDS Client Path:"
-    #     ls -l /usr/local/lib | grep libmicrourcdds
+    #     ls -l /usr/local/lib | grep libmicroxrcedds_client
 
   build:
     needs: setup-environment

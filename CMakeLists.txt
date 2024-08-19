@@ -110,3 +110,22 @@ target_compile_definitions(CombatDisplay
 
 # Copy manifest file
 file(COPY ${CMAKE_SOURCE_DIR}/xmlParser/FastDDSManifest.xml DESTINATION ${CMAKE_BINARY_DIR})
+
+# Configure Micro XRCE-DDS dependencies
+# Path where dependencies are installed
+set(MICRO_XRCE_DDS_AGENT_DIR "/usr/local/bin/MicroXRCEAgent")
+set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib")
+include_directories(${MICRO_XRCE_DDS_CLIENT_DIR}/uxr/client)
+link_directories(${MICRO_XRCE_DDS_CLIENT_DIR})
+
+# Add target for Micro XRCE-DDS Agent
+add_custom_target(MicroXRCEAgent
+    COMMAND ${CMAKE_COMMAND} -E echo "Micro XRCE-DDS Agent installed at ${MICRO_XRCE_DDS_AGENT_DIR}"
+    DEPENDS ${MICRO_XRCE_DDS_AGENT_DIR}
+)
+
+# Add target for Micro XRCE-DDS Client
+add_custom_target(MicroXRCEClient
+    COMMAND ${CMAKE_COMMAND} -E echo "Micro XRCE-DDS Client installed at ${MICRO_XRCE_DDS_CLIENT_DIR}"
+    DEPENDS ${MICRO_XRCE_DDS_CLIENT_DIR}
+)
