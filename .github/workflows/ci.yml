@@ -87,12 +87,12 @@ jobs:
         ls -l /usr/local/lib | grep microcdr
         ls -l /usr/local/bin | grep MicroXRCEAgent
 
-    - name: Debug cache paths
-      run: |
-        echo "Micro XRCE-DDS Agent Path:"
-        ls -l /usr/local/bin/MicroXRCEAgent
-        echo "Micro XRCE-DDS Client Path:"
-        ls -l /usr/local/lib | grep libmicrourcdds
+    # - name: Debug cache paths
+    #   run: |
+    #     echo "Micro XRCE-DDS Agent Path:"
+    #     ls -l /usr/local/bin/MicroXRCEAgent
+    #     echo "Micro XRCE-DDS Client Path:"
+    #     ls -l /usr/local/lib | grep libmicrourcdds
 
   build:
     needs: setup-environment
