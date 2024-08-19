@@ -49,6 +49,9 @@ jobs:
     - name: Build the project
       run: cmake --build build --config Release
 
+    - name: List build directory contents
+      run: ls -la build  # Debugging step
+
     - name: Upload build artifacts
       id: upload-build-artifact
       uses: actions/upload-artifact@v3
@@ -71,7 +74,7 @@ jobs:
     - name: List downloaded artifacts
       run: |
         echo "Listing build directory contents:"
-        ls -la build
+        ls -la build  # Debugging step
 
     - name: Install cppcheck
       run: sudo apt-get install -y cppcheck
@@ -100,7 +103,7 @@ jobs:
     - name: List downloaded artifacts
       run: |
         echo "Listing build directory contents:"
-        ls -la build
+        ls -la build  # Debugging step
 
     - name: Set up Clang-Format
       run: sudo apt-get install -y clang-format
