@@ -19,12 +19,13 @@ jobs:
     - name: Set up C++ build environment
       run: sudo apt-get update && sudo apt-get install -y build-essential cmake qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
 
-    - name: Install Micro XRCE-DDS dependencies
+    - name: Install microcdr and microxrcedds_client dependencies
       run: |
-        sudo snap install micro-xrce-dds-agent
+        sudo apt-get update
+        sudo apt-get install -y libmicrocdr-dev libmicroxrcedds-client-dev
 
     - name: Configure the project
-      run: cmake -S . -B build
+      run: cmake -S . -B build -DCMAKE_PREFIX_PATH="/usr/local/share/microcdr/cmake:/usr/local/share/microxrcedds_client/cmake"
 
     - name: Build the project
       run: cmake --build build --config Release
