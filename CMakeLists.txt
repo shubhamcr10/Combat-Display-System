@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.5)
 project(CombatDisplay LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -12,41 +11,28 @@ set(UCLIENT_PROFILE_UDP TRUE)
 set(UCLIENT_PROFILE_TCP TRUE)
 set(UCLIENT_PROFILE_SERIAL TRUE)
 
+# Add paths where CMake can find the microcdr and microxrcedds_client packages
+set(CMAKE_PREFIX_PATH "/usr/local/share/microcdr/cmake;/usr/local/share/microxrcedds_client/cmake")
+
+# Manually include microcdr and microxrcedds_client
+find_package(microcdr REQUIRED PATHS "/usr/local/share/microcdr/cmake")
+find_package(microxrcedds_client REQUIRED PATHS "/usr/local/share/microxrcedds_client/cmake")
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Set paths for dependencies
-set(MICRO_XRCE_DDS_AGENT_DIR "/usr/local/bin/MicroXRCEAgent")
-set(MICRO_XRCE_DDS_CLIENT_DIR "/usr/local/lib")
-
-# Hardcode the locations for all configuration files
-set(CMAKE_PREFIX_PATH 
-    "/usr/local/share/microcdr/cmake"
-    "/usr/local/share/microxrcedds_client/cmake"
-    "/usr/local/share/microxrcedds_agent/cmake"
-    ${CMAKE_PREFIX_PATH}
-)
-
-# Include directories
+link_directories(${CMAKE_SOURCE_DIR}/xmlParser)
 include_directories(${CMAKE_SOURCE_DIR}/xmlParser)
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(/usr/local/include)  # Include the directory where microcdr and microxrcedds_client headers are located
 
-# Configure Micro XRCE-DDS dependencies
-include_directories(/usr/local/include/uxr/client)
-link_directories(/usr/local/lib)
-
-# Find required packages
-find_package(microcdr REQUIRED PATHS "/usr/local/share/microcdr/cmake")
-find_package(microxrcedds_client REQUIRED PATHS "/usr/local/share/microxrcedds_client/cmake")
 find_package(Qt5 COMPONENTS Core Quick REQUIRED)
 
-# Source and header files
 set(DDS_SRCS
     xmlParser/Tool.cpp
     src/subscriber.cpp
 )
 
+# Add headers
 set(DDS_HEADERS
     xmlParser/Tool.h
     xmlParser/pugixml.hpp
@@ -55,7 +41,6 @@ set(DDS_HEADERS
     include/TopicDefinitions.h
 )
 
-# Add executable or library
 if(ANDROID)
     add_library(CombatDisplay SHARED
        src/main.cpp
@@ -108,30 +93,12 @@ else()
     )
 endif()
 
-# Link libraries
-target_link_libraries(CombatDisplay
-  PRIVATE Qt5::Core Qt5::Quick
-  microxrcedds_client
-  microcdr
-  ${CMAKE_SOURCE_DIR}/xmlParser/libs/libpugixml.a
-)
-
-# Set compile definitions
 target_compile_definitions(CombatDisplay
-  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
-)
+  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+target_link_libraries(CombatDisplay
+  PRIVATE Qt5::Core Qt5::Quick )
 
-# Copy manifest file
+target_link_libraries(CombatDisplay
+  PRIVATE microxrcedds_client ${CMAKE_SOURCE_DIR}/xmlParser/libs/libpugixml.a)
+
 file(COPY ${CMAKE_SOURCE_DIR}/xmlParser/FastDDSManifest.xml DESTINATION ${CMAKE_BINARY_DIR})
-
-# Add target for Micro XRCE-DDS Agent
-add_custom_target(MicroXRCEAgent
-    COMMAND ${CMAKE_COMMAND} -E echo "Micro XRCE-DDS Agent installed at ${MICRO_XRCE_DDS_AGENT_DIR}"
-    DEPENDS ${MICRO_XRCE_DDS_AGENT_DIR}
-)
-
-# Add target for Micro XRCE-DDS Client
-add_custom_target(MicroXRCEClient
-    COMMAND ${CMAKE_COMMAND} -E echo "Micro XRCE-DDS Client installed at ${MICRO_XRCE_DDS_CLIENT_DIR}"
-    DEPENDS ${MICRO_XRCE_DDS_CLIENT_DIR}
-)
