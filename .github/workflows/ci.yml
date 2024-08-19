@@ -9,21 +9,19 @@ on:
       - main
 
 jobs:
-  setup-environment:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential cmake gcc g++ curl libssl-dev libasio-dev libtinyxml2-dev
-        sudo apt-get install -y qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev
+    - name: Set up C++ build environment
+      run: sudo apt-get update && sudo apt-get install -y build-essential cmake qtbase5-dev qt5-qmake qml-module-qtquick-controls2 qtdeclarative5-dev git
 
-    - name: Install Micro-CDR
+    - name: Install microcdr and microxrcedds_client from source
       run: |
+        # Install microcdr
         git clone https://github.com/eProsima/Micro-CDR
         cd Micro-CDR
         mkdir build && cd build
@@ -32,24 +30,14 @@ jobs:
         sudo make install
         cd ../..
 
-    - name: Install Micro XRCE-DDS Client
-      run: |
+        # Install microxrcedds_client
         git clone https://github.com/eProsima/Micro-XRCE-DDS-Client.git
         cd Micro-XRCE-DDS-Client
         mkdir build && cd build
         cmake ..
         make
         sudo make install
-        sudo ldconfig /usr/local/lib/
         cd ../..
-
-  build:
-    needs: setup-environment
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
 
     - name: Configure the project
       run: cmake -S . -B build
@@ -57,10 +45,8 @@ jobs:
     - name: Build the project
       run: cmake --build build --config Release
 
-    - name: Verify build artifacts
-      run: |
-        ls -l build/
-        ls -l build/CombatDisplay
+    - name: Run tests
+      run: ./build/CombatDisplay
 
   analyze:
     needs: build
