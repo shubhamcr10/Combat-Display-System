@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      build-dir: ${{ steps.build.outputs.build-dir }}
 
     steps:
     - name: Checkout repository
@@ -46,12 +48,22 @@ jobs:
 
     - name: Build the project
       run: cmake --build build --config Release
+      id: build
+      outputs:
+        build-dir: build
 
     - name: List build directory
       run: ls -l build || echo "Build directory not found"
 
     - name: Run tests
       run: ./build/CombatDisplay
+
+  analyze:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
 
     - name: Install cppcheck
       run: sudo apt-get install -y cppcheck
@@ -68,33 +80,9 @@ jobs:
     - name: Run clang-tidy
       run: clang-tidy -p=build src/*.cpp include/*.h
 
-  # analyze:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v3
-
-  #   - name: Install cppcheck
-  #     run: sudo apt-get install -y cppcheck
-
-  #   - name: Run cppcheck
-  #     run: cppcheck --enable=all --std=c++11 --force src include
-
-  #   - name: Install clang-tidy
-  #     run: sudo apt-get install -y clang-tidy
-
-  #   - name: List build directory
-  #     run: ls -l build || echo "Build directory not found"
-
-  #   - name: Run clang-tidy
-  #     run: clang-tidy -p=build src/*.cpp include/*.h
-
   format:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
