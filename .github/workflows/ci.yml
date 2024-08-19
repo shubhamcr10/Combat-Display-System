@@ -22,8 +22,8 @@ jobs:
     - name: Install microcdr and microxrcedds_client from source
       run: |
         # Install microcdr
-        git clone https://github.com/eProsima/microcdr.git
-        cd microcdr
+        git clone https://github.com/eProsima/Micro-CDR
+        cd Micro-CDR
         mkdir build && cd build
         cmake ..
         sudo make install
