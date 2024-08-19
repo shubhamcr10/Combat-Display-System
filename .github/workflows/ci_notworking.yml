@@ -9,8 +9,10 @@ on:
       - main
 
 jobs:
-  build_Analyze_Format_Checks:
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      build-dir: ${{ steps.upload-build-artifact.outputs.artifact-name }}
 
     steps:
     - name: Checkout repository
@@ -47,11 +49,29 @@ jobs:
     - name: Build the project
       run: cmake --build build --config Release
 
-    - name: List build directory
-      run: ls -l build || echo "Build directory not found"
+    - name: Upload build artifacts
+      id: upload-build-artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: build-artifacts
+        path: build
 
-    - name: Run tests
-      run: ./build/CombatDisplay
+  analyze:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+
+    - name: List downloaded artifacts
+      run: |
+        echo "Listing build directory contents:"
+        ls -la build
 
     - name: Install cppcheck
       run: sudo apt-get install -y cppcheck
@@ -62,11 +82,25 @@ jobs:
     - name: Install clang-tidy
       run: sudo apt-get install -y clang-tidy
 
-    - name: List build directory
-      run: ls -l build || echo "Build directory not found"
-
     - name: Run clang-tidy
       run: clang-tidy -p=build src/*.cpp include/*.h
+
+  format:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: build-artifacts
+
+    - name: List downloaded artifacts
+      run: |
+        echo "Listing build directory contents:"
+        ls -la build
 
     - name: Set up Clang-Format
       run: sudo apt-get install -y clang-format
@@ -75,50 +109,4 @@ jobs:
       run: clang-format -i **/*.cpp **/*.h
 
     - name: Check for formatting issues
-      run: |
-        if ! git diff --exit-code; then
-          echo "Formatting issues detected!"
-          git diff
-        else
-          echo "No formatting issues detected."
-        fi
-
-  # analyze:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v3
-
-  #   - name: Install cppcheck
-  #     run: sudo apt-get install -y cppcheck
-
-  #   - name: Run cppcheck
-  #     run: cppcheck --enable=all --std=c++11 --force src include
-
-  #   - name: Install clang-tidy
-  #     run: sudo apt-get install -y clang-tidy
-
-  #   - name: List build directory
-  #     run: ls -l build || echo "Build directory not found"
-
-  #   - name: Run clang-tidy
-  #     run: clang-tidy -p=build src/*.cpp include/*.h
-
-  # format:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v3
-
-  #   - name: Set up Clang-Format
-  #     run: sudo apt-get install -y clang-format
-
-  #   - name: Format code
-  #     run: clang-format -i **/*.cpp **/*.h
-
-  #   - name: Check for formatting issues
-  #     run: git diff --exit-code
+      run: git diff --exit-code
