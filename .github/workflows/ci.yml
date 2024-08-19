@@ -68,6 +68,11 @@ jobs:
       with:
         name: build-artifacts
 
+    - name: List downloaded artifacts
+      run: |
+        echo "Listing build directory contents:"
+        ls -la build
+
     - name: Install cppcheck
       run: sudo apt-get install -y cppcheck
 
@@ -91,6 +96,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: build-artifacts
+
+    - name: List downloaded artifacts
+      run: |
+        echo "Listing build directory contents:"
+        ls -la build
 
     - name: Set up Clang-Format
       run: sudo apt-get install -y clang-format
