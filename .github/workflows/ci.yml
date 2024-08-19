@@ -62,7 +62,7 @@ jobs:
       run: sudo apt-get install -y cppcheck
 
     - name: Run cppcheck
-      run: cppcheck --enable=all --std=c++11 --force --include-dir=src --include-dir=include src include
+      run: cppcheck --enable=all --std=c++11 --force --include=src --include=include src include
 
     - name: Install clang-tidy
       run: sudo apt-get install -y clang-tidy
