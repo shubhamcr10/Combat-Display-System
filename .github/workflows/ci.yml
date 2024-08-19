@@ -26,6 +26,7 @@ jobs:
         cd Micro-CDR
         mkdir build && cd build
         cmake ..
+        make
         sudo make install
         cd ../..
 
@@ -34,6 +35,7 @@ jobs:
         cd Micro-XRCE-DDS-Client
         mkdir build && cd build
         cmake ..
+        make
         sudo make install
         cd ../..
 
